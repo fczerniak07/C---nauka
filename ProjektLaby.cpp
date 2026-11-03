@@ -1,20 +1,20 @@
 #include <iostream>
 #include <cmath>
-#include <algorithm>
 
 using namespace std;
 
-// Krok 2: Wyświetlanie stanu populacji
+// Krok 2: Wyswietlanie stanu populacji
 void showPopulation(int day, int susceptible, int infected, int recovered) {
     int total = susceptible + infected + recovered;
-    cout << "\nDay: " << day << "\n";
-    cout << "Susceptible: " << susceptible << "\n";
-    cout << "Infected: " << infected << "\n";
-    cout << "Recovered: " << recovered << "\n";
-    cout << "Total: " << total << "\n";
+    cout << endl;
+    cout << "Day: " << day << endl;
+    cout << "Susceptible: " << susceptible << endl;
+    cout << "Infected: " << infected << endl;
+    cout << "Recovered: " << recovered << endl;
+    cout << "Total: " << total << endl;
 }
 
-// Krok 5: Sprawdzenie poprawności populacji
+// Krok 5: Sprawdzenie poprawnosci populacji
 bool checkPopulation(int susceptible, int infected, int recovered) {
     if (susceptible < 0 || infected < 0 || recovered < 0) {
         return false;
@@ -29,45 +29,48 @@ bool checkPopulation(int susceptible, int infected, int recovered) {
 void simulateDay(int &day, int &susceptible, int &infected, int &recovered, double infectionRate, double recoveryRate) {
     int currentInfected = infected;
 
-    // Obliczenie wartości zaokrąglonych w dół na podstawie stanu początkowego dnia
-    int newInfections = static_cast<int>(floor(currentInfected * infectionRate));
-    int newRecoveries = static_cast<int>(floor(currentInfected * recoveryRate));
+    // Zaokraglanie w dol z uzyciem rzutowania (int)
+    int newInfections = (int)floor(currentInfected * infectionRate);
+    int newRecoveries = (int)floor(currentInfected * recoveryRate);
 
-    // Ograniczenie do dostępnych osób w odpowiednich grupach
-    newInfections = min(newInfections, susceptible);
-    newRecoveries = min(newRecoveries, currentInfected);
+    // Ograniczenie liczby za pomoca prostego if
+    if (newInfections > susceptible) {
+        newInfections = susceptible;
+    }
+    if (newRecoveries > currentInfected) {
+        newRecoveries = currentInfected;
+    }
 
-    // Aktualizacja grup
-    susceptible -= newInfections;
+    // Aktualizacja stanu
+    susceptible = susceptible - newInfections;
     infected = infected + newInfections - newRecoveries;
-    recovered += newRecoveries;
+    recovered = recovered + newRecoveries;
 
-    // Inkrementacja numeru dnia
+    // Kolejny dzien
     day++;
 }
 
-// Krok 7: Zmiana parametrów modelu z walidacją
+// Krok 7: Zmiana parametrow modelu
 void changeParameters(double &infectionRate, double &recoveryRate) {
-    double tempInfectionRate, tempRecoveryRate;
+    double newInf, newRec;
 
     cout << "Enter infection rate (0-1): ";
-    cin >> tempInfectionRate;
+    cin >> newInf;
     cout << "Enter recovery rate (0-1): ";
-    cin >> tempRecoveryRate;
+    cin >> newRec;
 
-    // Walidacja obu wartości przed wprowadzeniem zmian
-    if (tempInfectionRate >= 0.0 && tempInfectionRate <= 1.0 &&
-        tempRecoveryRate >= 0.0 && tempRecoveryRate <= 1.0) {
-        infectionRate = tempInfectionRate;
-        recoveryRate = tempRecoveryRate;
-        cout << "Parameters updated.\n";
+    // Sprawdzenie czy obie liczby mieszcza sie w przedziale [0, 1]
+    if (newInf >= 0.0 && newInf <= 1.0 && newRec >= 0.0 && newRec <= 1.0) {
+        infectionRate = newInf;
+        recoveryRate = newRec;
+        cout << "Parameters updated." << endl;
     } else {
-        cout << "Error: Rates must be between 0 and 1. Parameters remain unchanged.\n";
+        cout << "Blad: Wspolczynniki musza byc z przedzialu od 0 do 1!" << endl;
     }
 }
 
 int main() {
-    // Krok 1: Inicjalizacja stanu początkowego
+    // Krok 1: Stan poczatkowy
     int susceptible = 80;
     int infected = 10;
     int recovered = 10;
@@ -76,30 +79,26 @@ int main() {
     double infectionRate = 0.20;
     double recoveryRate = 0.10;
 
-    bool running = true;
+    int choice = 0;
 
-    // Krok 6: Główna pętla programu
-    while (running) {
+    // Krok 6: Glowna petla
+    while (choice != 3) {
         showPopulation(day, susceptible, infected, recovered);
 
-        cout << "\n=== Epidemic Simulator ===\n";
-        cout << "1. Simulate next day\n";
-        cout << "2. Change model parameters\n";
-        cout << "3. Exit\n";
+        cout << endl;
+        cout << "=== Epidemic Simulator ===" << endl;
+        cout << "1. Simulate next day" << endl;
+        cout << "2. Change model parameters" << endl;
+        cout << "3. Exit" << endl;
         cout << "Your choice: ";
-
-        int choice;
-        if (!(cin >> choice)) {
-            cout << "Invalid input. Exiting.\n";
-            break;
-        }
+        cin >> choice;
 
         switch (choice) {
             case 1:
                 simulateDay(day, susceptible, infected, recovered, infectionRate, recoveryRate);
-                if (!checkPopulation(susceptible, infected, recovered)) {
-                    cout << "\nCritical Error: Invalid population state detected!\n";
-                    running = false;
+                if (checkPopulation(susceptible, infected, recovered) == false) {
+                    cout << "Blad krytyczny: Niepoprawny stan populacji!" << endl;
+                    return 1;
                 }
                 break;
 
@@ -108,12 +107,11 @@ int main() {
                 break;
 
             case 3:
-                cout << "Exiting simulator. Goodbye!\n";
-                running = false;
+                cout << "Koniec programu." << endl;
                 break;
 
             default:
-                cout << "Invalid choice. Please select an option from 1 to 3.\n";
+                cout << "Niepoprawna opcja! Wybierz 1, 2 lub 3." << endl;
                 break;
         }
     }
