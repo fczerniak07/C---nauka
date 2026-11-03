@@ -83,5 +83,5 @@ cout << "Liczby ponizej sredniej: " << ponizejSredniej << endl;
 cout << "Minimum: " << minimum << endl;
 cout << "Maksimum: " << maksimum << endl;
 
-return 0;
+return 0; 
 }
