@@ -29,11 +29,11 @@ bool checkPopulation(int susceptible, int infected, int recovered) {
 void simulateDay(int &day, int &susceptible, int &infected, int &recovered, double infectionRate, double recoveryRate) {
     int currentInfected = infected;
 
-    // Zaokraglanie w dol z uzyciem rzutowania (int)
+    // Zaokraglanie w dol 
     int newInfections = (int)floor(currentInfected * infectionRate);
     int newRecoveries = (int)floor(currentInfected * recoveryRate);
 
-    // Ograniczenie liczby za pomoca prostego if
+    // Ograniczenie liczby za pomoca if
     if (newInfections > susceptible) {
         newInfections = susceptible;
     }
@@ -41,7 +41,7 @@ void simulateDay(int &day, int &susceptible, int &infected, int &recovered, doub
         newRecoveries = currentInfected;
     }
 
-    // Aktualizacja stanu
+    // Aktualizacja
     susceptible = susceptible - newInfections;
     infected = infected + newInfections - newRecoveries;
     recovered = recovered + newRecoveries;
@@ -81,7 +81,7 @@ int main() {
 
     int choice = 0;
 
-    // Krok 6: Glowna petla
+    // Krok 6: petla glowna na szyi
     while (choice != 3) {
         showPopulation(day, susceptible, infected, recovered);
 
